@@ -1,4 +1,6 @@
 ﻿using Excercise;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 
 namespace GridmapSearch
@@ -36,7 +38,7 @@ namespace GridmapSearch
                 TileRender(input[0], input[1], vec[0], vec[1], points);
 
                 s = Console.ReadKey().Key;
-
+                
                 switch (s)
                 {
                     case ConsoleKey.UpArrow:
@@ -52,7 +54,7 @@ namespace GridmapSearch
                         vec[selectIndex] += new Vector2Int(-1, 0);
                         break;
                     case ConsoleKey.Oem3:
-                        Console.WriteLine("\nStart / End / Wall 선택 , 1 : start, 0 : end, # : wall");
+                        Console.WriteLine("\nStart / End 선택 , 1 : start, 0 : end");
                         selectIndex = int.Parse(Console.ReadLine());
                         break;
                 }
@@ -90,19 +92,17 @@ namespace GridmapSearch
                     }
                     else if (pathPointMap[j, i])
                     {
-                        Console.Write("@ ");
+                        Console.Write("# ");
                     }
-                    /*else if (((j == minX || j == maxX) && (i >= minY && i <= maxY))
-                        || ((i == minY || i == maxY) && (j >= minX && j <= maxX)))
-                    {
-                        Console.Write("@ ");
-                    }*/
                     else
                     {
-                        Console.Write("* ");
+                        Console.Write(". ");
                     }
                     if (j == x - 1)
+                    {
                         Console.WriteLine();
+                    }
+                        
                 }
             }
         }
@@ -116,7 +116,7 @@ namespace GridmapSearch
             int[,] open = new int[mapY, mapX];
             for (int i = 0; i < mapX; i++)
                 for (int j = 0; j < mapY; j++)
-                    open[i, j] = Int32.MaxValue;
+                    open[j, i] = Int32.MaxValue;
             Vector2Int[,] parent = new Vector2Int[mapY, mapX];
             Excercise.PriorityQueue<PathNode> pq = new PriorityQueue<PathNode>();
 

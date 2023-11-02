@@ -20,7 +20,7 @@ namespace Excercise
             while (now > 0)
             {
                 int next = (now - 1) / 2;  // 부모 노드
-                if (_heap[now].CompareTo(_heap[next]) < 0)  // 부모 노드와 비교
+                if (_heap[now].CompareTo(_heap[next]) > 0)  // 부모 노드와 비교
                     break;
 
                 // 두 값을 서로 자리 바꿈
@@ -53,10 +53,10 @@ namespace Excercise
 
                 int next = now;
                 // 왼쪽 값이 현재값보다 크면, 왼쪽으로 이동
-                if (left <= lastIndex && _heap[next].CompareTo(_heap[left]) < 0)
+                if (left <= lastIndex && _heap[next].CompareTo(_heap[left]) > 0)
                     next = left;
                 // 오른쪽 값이 현재값(왼쪽 이동 포함)보다 크면, 오른쪽으로 이동
-                if (right <= lastIndex && _heap[next].CompareTo(_heap[right]) < 0)
+                if (right <= lastIndex && _heap[next].CompareTo(_heap[right]) > 0)
                     next = right;
 
                 // 왼쪽/오른쪽 모두 현재값보다 작으면 종료
