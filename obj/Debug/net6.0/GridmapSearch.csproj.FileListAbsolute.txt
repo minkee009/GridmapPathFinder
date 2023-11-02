@@ -1,0 +1,15 @@
+C:\Users\PC\source\repos\GridmapSearch\bin\Debug\net6.0\GridmapSearch.exe
+C:\Users\PC\source\repos\GridmapSearch\bin\Debug\net6.0\GridmapSearch.deps.json
+C:\Users\PC\source\repos\GridmapSearch\bin\Debug\net6.0\GridmapSearch.runtimeconfig.json
+C:\Users\PC\source\repos\GridmapSearch\bin\Debug\net6.0\GridmapSearch.dll
+C:\Users\PC\source\repos\GridmapSearch\bin\Debug\net6.0\GridmapSearch.pdb
+C:\Users\PC\source\repos\GridmapSearch\obj\Debug\net6.0\GridmapSearch.csproj.AssemblyReference.cache
+C:\Users\PC\source\repos\GridmapSearch\obj\Debug\net6.0\GridmapSearch.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\PC\source\repos\GridmapSearch\obj\Debug\net6.0\GridmapSearch.AssemblyInfoInputs.cache
+C:\Users\PC\source\repos\GridmapSearch\obj\Debug\net6.0\GridmapSearch.AssemblyInfo.cs
+C:\Users\PC\source\repos\GridmapSearch\obj\Debug\net6.0\GridmapSearch.csproj.CoreCompileInputs.cache
+C:\Users\PC\source\repos\GridmapSearch\obj\Debug\net6.0\GridmapSearch.dll
+C:\Users\PC\source\repos\GridmapSearch\obj\Debug\net6.0\refint\GridmapSearch.dll
+C:\Users\PC\source\repos\GridmapSearch\obj\Debug\net6.0\GridmapSearch.pdb
+C:\Users\PC\source\repos\GridmapSearch\obj\Debug\net6.0\GridmapSearch.genruntimeconfig.cache
+C:\Users\PC\source\repos\GridmapSearch\obj\Debug\net6.0\ref\GridmapSearch.dll
