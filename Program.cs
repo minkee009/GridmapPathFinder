@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
+using System.Xml.Linq;
 
 namespace GridmapSearch
 {
@@ -12,7 +13,7 @@ namespace GridmapSearch
 
         static void Main(string[] args)
         {
-
+            Console.Clear();
             //맵 크기 결정
             int[] input = Array.ConvertAll(Console.ReadLine().Split(), int.Parse);
             Vector2Int[] vec = new Vector2Int[3];
@@ -23,14 +24,17 @@ namespace GridmapSearch
                 vec[i] = new Vector2Int(currentVecInt[0], currentVecInt[1]);
             }
 
+            //벽 생성 커서 위치 초기화
             vec[2] = Vector2Int.zero;
 
+            //벽 지도 초기화
             bool[,] collisionMap = new bool[input[1], input[0]];  
 
             Console.Clear();
 
             var inputString = "";
             var selectIndex = 1;
+            var radiusCost = 0;
             ConsoleKey s = ConsoleKey.Spacebar;
 
             while (s != ConsoleKey.Escape)
@@ -39,7 +43,7 @@ namespace GridmapSearch
                 Console.WriteLine(inputString);
 
                 //길찾기
-                PathFind(input[0], input[1], vec[0], vec[1], collisionMap, out var points);
+                PathFind(input[0], input[1], vec[0], vec[1], collisionMap, out var points, radiusCost);
 
                 TileRender(input[0], input[1], vec[0], vec[1], vec[2], collisionMap, points);
 
@@ -60,12 +64,25 @@ namespace GridmapSearch
                         vec[selectIndex] += new Vector2Int(-1, 0);
                         break;
                     case ConsoleKey.Oem3:
-                        Console.WriteLine("\nStart / End 선택 / Wall 선택 , 0 : start, 1 : end , 2 : wall");
-                        selectIndex = int.Parse(Console.ReadLine());
+                        Console.Write("\r ");
+                        Console.WriteLine();
+                        Console.WriteLine("Start / End 선택 / Wall 선택 , 0 : start, 1 : end , 2 : wall");
+                        string currentString = Console.ReadLine();
+                        if (int.TryParse(currentString, out int outNum))
+                        {
+                            selectIndex = Math.Clamp(outNum, 0, vec.Length - 1);
+                        }
+                        else if(currentString == "!setCost")
+                        {
+                            radiusCost = int.Parse(Console.ReadLine());
+                        }
                         break;
                 }
 
                 editMode = selectIndex == 2 ? true : false;
+
+                if (selectIndex != 2)
+                    vec[2] = vec[selectIndex];
 
                 if (vec[selectIndex].x < 0 || vec[selectIndex].x > input[0] - 1)
                     vec[selectIndex].x = vec[selectIndex].x < 0 ? 0 : input[0] - 1;
@@ -127,7 +144,7 @@ namespace GridmapSearch
         }
 
 
-        static void PathFind(int mapX, int mapY, Vector2Int start, Vector2Int end, bool[,] collisionMap, out List<Vector2Int> points)
+        static void PathFind(int mapX, int mapY, Vector2Int start, Vector2Int end, bool[,] collisionMap, out List<Vector2Int> points, int radiusCost = 0)
         {
             points = new List<Vector2Int>();
             Vector2Int[] deltaPos = { Vector2Int.up, Vector2Int.left, Vector2Int.down, Vector2Int.right };
@@ -142,10 +159,9 @@ namespace GridmapSearch
             open[start.y, start.x] = Math.Abs(mapY - start.y) + Math.Abs(mapX - start.x);
             pq.Push(new PathNode { G = 0, H = Math.Abs(mapY - start.y) + Math.Abs(mapX - start.x), pos = start });
             parent[start.y, start.x] = new Vector2Int(start.x, start.y);
-            
+
             while (pq.Count > 0)
             {
-
                 PathNode node = pq.Pop();
 
                 if (closed[node.pos.y, node.pos.x])
@@ -155,6 +171,7 @@ namespace GridmapSearch
 
                 if (node.pos == end)
                     break;
+
                 for (int i = 0; i < deltaPos.Length; i++)
                 {
                     var next = node.pos + deltaPos[i];
@@ -181,21 +198,26 @@ namespace GridmapSearch
                     parent[next.y, next.x] = new Vector2Int(node.pos.x, node.pos.y);
                 }
             }
-            
-            CalcPathFormParent(parent, end.x, end.y,points);
+
+            CalcPathFormParent(parent, end.x, end.y, points, radiusCost);
         }
 
-        private static void CalcPathFormParent(Vector2Int[,] parent,int destX,int destY, List<Vector2Int> points)
+        private static void CalcPathFormParent(Vector2Int[,] parent,int destX,int destY, List<Vector2Int> points, int cost = 0)
         {
-            Vector2Int pos = new Vector2Int(destX, destY);
-            while (parent[pos.y,pos.x].y != pos.y || parent[pos.y, pos.x].x != pos.x)
+            Vector2Int currentPos = new Vector2Int(destX, destY);
+
+            while (parent[currentPos.y,currentPos.x].y != currentPos.y || parent[currentPos.y, currentPos.x].x != currentPos.x)
             {
-                points.Add(new Vector2Int(pos.x, pos.y));
-                var newPos = parent[pos.y, pos.x];
-                pos.x = newPos.x;
-                pos.y = newPos.y;
+                //반경 카운트, 카운트를 소모하여 그 이후 부터 뒤로 추적
+                if (cost == 0)
+                    points.Add(new Vector2Int(currentPos.x, currentPos.y));
+                else
+                    cost--;
+                var newPos = parent[currentPos.y, currentPos.x];
+                currentPos.x = newPos.x;
+                currentPos.y = newPos.y;
             }
-            points.Add(new Vector2Int(pos.x, pos.y));
+            points.Add(new Vector2Int(currentPos.x, currentPos.y));
             points.Reverse();
         }
     }
