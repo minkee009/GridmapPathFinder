@@ -64,6 +64,7 @@ namespace GridmapSearch
                         vec[selectIndex] += new Vector2Int(-1, 0);
                         break;
                     case ConsoleKey.Oem3:
+                    case ConsoleKey.E:
                         Console.Write("\r ");
                         Console.WriteLine();
                         Console.WriteLine("Start / End 선택 / Wall 선택 , 0 : start, 1 : end , 2 : wall");
@@ -103,7 +104,6 @@ namespace GridmapSearch
             foreach(var path in pathPoints)
             {
                 pathPointMap[path.x, path.y] = true;
-                //Console.WriteLine($"{path.x} + {path.y}");
             }
 
             for (int i = y - 1; i > -1; i--)
@@ -114,13 +114,13 @@ namespace GridmapSearch
                     {
                         Console.Write("* ");
                     }
-                    else if (j == start.x && i == start.y)
-                    {
-                        Console.Write("0 ");
-                    }
                     else if (j == end.x && i == end.y)
                     {
                         Console.Write("1 ");
+                    }
+                    else if (j == start.x && i == start.y)
+                    {
+                        Console.Write("0 ");
                     }
                     else if (pathPointMap[j, i])
                     {
@@ -175,11 +175,9 @@ namespace GridmapSearch
                 for (int i = 0; i < deltaPos.Length; i++)
                 {
                     var next = node.pos + deltaPos[i];
-                    //Console.WriteLine("!");
 
                     if (next.x < 0 || next.x >= mapX || next.y < 0 || next.y >= mapY)
                         continue;
-                    //Console.WriteLine("?");
                     if (closed[next.y, next.x])
                         continue;
                     if (collisionMap[next.y, next.x])
