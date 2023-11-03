@@ -8,18 +8,24 @@ namespace GridmapSearch
     internal class Program
     {
 
+        static bool editMode = false;
+
         static void Main(string[] args)
         {
 
             //맵 크기 결정
             int[] input = Array.ConvertAll(Console.ReadLine().Split(), int.Parse);
-            Vector2Int[] vec = new Vector2Int[2];
+            Vector2Int[] vec = new Vector2Int[3];
 
             for (int i = 0; i < 2; i++)
             {
                 var currentVecInt = Array.ConvertAll(Console.ReadLine().Split(), int.Parse);
                 vec[i] = new Vector2Int(currentVecInt[0], currentVecInt[1]);
             }
+
+            vec[2] = Vector2Int.zero;
+
+            bool[,] collisionMap = new bool[input[1], input[0]];  
 
             Console.Clear();
 
@@ -33,9 +39,9 @@ namespace GridmapSearch
                 Console.WriteLine(inputString);
 
                 //길찾기
-                PathFind(input[0], input[1], vec[0], vec[1], out var points);
+                PathFind(input[0], input[1], vec[0], vec[1], collisionMap, out var points);
 
-                TileRender(input[0], input[1], vec[0], vec[1], points);
+                TileRender(input[0], input[1], vec[0], vec[1], vec[2], collisionMap, points);
 
                 s = Console.ReadKey().Key;
                 
@@ -54,21 +60,26 @@ namespace GridmapSearch
                         vec[selectIndex] += new Vector2Int(-1, 0);
                         break;
                     case ConsoleKey.Oem3:
-                        Console.WriteLine("\nStart / End 선택 , 1 : start, 0 : end");
+                        Console.WriteLine("\nStart / End 선택 / Wall 선택 , 0 : start, 1 : end , 2 : wall");
                         selectIndex = int.Parse(Console.ReadLine());
                         break;
                 }
+
+                editMode = selectIndex == 2 ? true : false;
 
                 if (vec[selectIndex].x < 0 || vec[selectIndex].x > input[0] - 1)
                     vec[selectIndex].x = vec[selectIndex].x < 0 ? 0 : input[0] - 1;
                 if (vec[selectIndex].y < 0 || vec[selectIndex].y > input[1] - 1)
                     vec[selectIndex].y = vec[selectIndex].y < 0 ? 0 : input[1] - 1;
 
+                if (editMode && s == ConsoleKey.Enter)
+                    collisionMap[vec[2].y, vec[2].x] = !collisionMap[vec[2].y, vec[2].x];
+
                 Console.Clear();
             }
         }
 
-        static void TileRender(int x, int y, Vector2Int start, Vector2Int end, List<Vector2Int> pathPoints)
+        static void TileRender(int x, int y, Vector2Int start, Vector2Int end, Vector2Int cursor, bool[,] collisionMap, List<Vector2Int> pathPoints)
         {
             bool[,] pathPointMap = new bool[x, y];
 
@@ -82,7 +93,11 @@ namespace GridmapSearch
             {
                 for (int j = 0; j < x; j++)
                 {
-                    if (j == start.x && i == start.y)
+                    if (editMode && j == cursor.x && i == cursor.y)
+                    {
+                        Console.Write("* ");
+                    }
+                    else if (j == start.x && i == start.y)
                     {
                         Console.Write("0 ");
                     }
@@ -93,6 +108,10 @@ namespace GridmapSearch
                     else if (pathPointMap[j, i])
                     {
                         Console.Write("# ");
+                    }
+                    else if (collisionMap[i, j])
+                    {
+                        Console.Write("@ ");
                     }
                     else
                     {
@@ -108,7 +127,7 @@ namespace GridmapSearch
         }
 
 
-        static void PathFind(int mapX, int mapY, Vector2Int start, Vector2Int end, out List<Vector2Int> points)
+        static void PathFind(int mapX, int mapY, Vector2Int start, Vector2Int end, bool[,] collisionMap, out List<Vector2Int> points)
         {
             points = new List<Vector2Int>();
             Vector2Int[] deltaPos = { Vector2Int.up, Vector2Int.left, Vector2Int.down, Vector2Int.right };
@@ -145,6 +164,8 @@ namespace GridmapSearch
                         continue;
                     //Console.WriteLine("?");
                     if (closed[next.y, next.x])
+                        continue;
+                    if (collisionMap[next.y, next.x])
                         continue;
 
                     int g = node.G + 1;
@@ -248,5 +269,6 @@ namespace GridmapSearch
         public static Vector2Int down => new Vector2Int(0, -1);
         public static Vector2Int right => new Vector2Int(1, 0);
         public static Vector2Int left => new Vector2Int(-1, 0);
+        public static Vector2Int zero => new Vector2Int(0, 0);
     }
 }
